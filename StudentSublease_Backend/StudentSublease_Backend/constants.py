@@ -1,11 +1,6 @@
 # App: users
 MAX_PROFILE_IMAGE_SIZE = 200
 
-MAPBOX_ACCESS_TOKEN = "pk.eyJ1Ijoic3R1ZGVudHN1YmxlYXNlIiwiYSI6ImNrYXFiMDRnczAydTIycm14M3Z0d29taGQifQ.dPhJ_IPH0SCIQTIsdhQc9Q"
-MAPBOX_API_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places/{0}.json?access_token={1}"
-GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/geocode/json?address={0}&key={1}"
-GOOGLE_MAPS_API_KEY = "AIzaSyBNi6f3eB0eXe2hxRyDo0V8e9WhxnrPSqY"
-
 DEFAULT_DISTANCE_BETWEEN_COLLEGES = 15
 
 # App: sublease
