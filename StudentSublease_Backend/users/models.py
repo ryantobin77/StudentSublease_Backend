@@ -71,6 +71,16 @@ class SubleaseUser(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'college',]
 
+    def json_representation(self):
+        return {
+            'pk' : self.pk,
+            'email' : self.email,
+            'phone_number' : self.phone_number,
+            'first_name' : self.first_name,
+            'last_name' : self.last_name,
+            'college' : str(self.college)
+        }
+
     def __str__(self):
         return self.email
 

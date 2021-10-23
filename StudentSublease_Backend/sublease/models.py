@@ -53,6 +53,29 @@ class StudentListing(models.Model):
     num_tenants = models.IntegerField(validators=[MinValueValidator(1)], verbose_name="Number of tenants", null=False)
     fees = models.FloatField(verbose_name="Applicable fees on the sublease", default=0, validators=[MinValueValidator(0)])
 
+    def json_representation(self):
+        amenities_val = self.amenities.all()
+        amenities = list()
+        for amenity in amenities_val:
+            amenities.append(amenity.amenity_name)
+        return {
+            'pk' : self.pk,
+            'title' : self.title,
+            'address' : str(self.address),
+            'lister' : self.lister.json_representation(),
+            'listed_date' : self.listed_date,
+            'description' : self.description,
+            'num_bed' : self.num_bed,
+            'num_bath' : self.num_bath,
+            'amenities' : amenities,
+            'gender_preference' : self.gender_preference,
+            'start_date' : self.start_date,
+            'end_date' : self.end_date,
+            'rent_per_month' : self.rent_per_month,
+            'num_tenants' : self.num_tenants,
+            'fees' : self.fees
+        }
+
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
