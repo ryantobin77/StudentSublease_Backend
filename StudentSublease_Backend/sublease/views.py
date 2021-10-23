@@ -41,7 +41,7 @@ def search_listings(request):
     if request.method == "GET":
         listings = StudentListing.objects.all().order_by('-listed_date')
         listing_results = [listing.json_representation() for listing in listings]
-        return JsonResponse({'listings' : listing_results}, status="200")
+        return JsonResponse(listing_results, safe=False, status="200")
     else:
         return HttpResponse(status=400)
 

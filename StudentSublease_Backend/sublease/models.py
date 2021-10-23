@@ -7,6 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 import time
 from PIL import Image
 import os
+from datetime import datetime
 
 
 class Amenity(models.Model):
@@ -59,21 +60,21 @@ class StudentListing(models.Model):
         for amenity in amenities_val:
             amenities.append(amenity.amenity_name)
         return {
-            'pk' : self.pk,
+            'pk' : int(self.pk),
             'title' : self.title,
             'address' : str(self.address),
             'lister' : self.lister.json_representation(),
-            'listed_date' : self.listed_date,
+            'listed_date' : self.listed_date.strftime('%m/%d/%Y'),
             'description' : self.description,
-            'num_bed' : self.num_bed,
-            'num_bath' : self.num_bath,
+            'num_bed' : int(self.num_bed),
+            'num_bath' : float(self.num_bath),
             'amenities' : amenities,
-            'gender_preference' : self.gender_preference,
-            'start_date' : self.start_date,
-            'end_date' : self.end_date,
-            'rent_per_month' : self.rent_per_month,
-            'num_tenants' : self.num_tenants,
-            'fees' : self.fees
+            'gender_preference' : int(self.gender_preference),
+            'start_date' : self.start_date.strftime('%m/%d/%Y'),
+            'end_date' : self.end_date.strftime('%m/%d/%Y'),
+            'rent_per_month' : int(self.rent_per_month),
+            'num_tenants' : int(self.num_tenants),
+            'fees' : int(self.fees)
         }
 
 
