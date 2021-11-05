@@ -6,6 +6,9 @@ from django.http import HttpResponse
 from sublease.models import Amenity, StudentListing
 from utils.models import Address
 from users.models import SubleaseUser
+from datetime import datetime
+from utils import utilities
+from StudentSublease_Backend import constants
 
 
 # Create your views here.
@@ -27,8 +30,10 @@ def create_listing(request):
         
         address = Address.objects.create(street=request.POST['street'], city=request.POST['city'], state=request.POST['state'], zip=request.POST['zip'], lat=request.POST['lat'], long=request.POST['long'], country="United States of America")
         amenities = Amenity.objects.all()
+        start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d')
+        end_date = datetime.strptime(request.POST['end_date'], '%Y-%m-%d')
         new_listing = StudentListing.objects.create(title=request.POST['title'], address=address, lister=lister, description=request.POST['description'], num_bed=request.POST['num_bed'], num_bath=request.POST['num_bath'], 
-                            gender_preference=request.POST['gender_preference'], start_date=request.POST['start_date'], end_date=request.POST['end_date'], rent_per_month=request.POST['rent_per_month'], num_tenants=request.POST['num_tenants'], fees=request.POST['fees'])
+                            gender_preference=request.POST['gender_preference'], start_date=start_date, end_date=end_date, rent_per_month=request.POST['rent_per_month'], num_tenants=request.POST['num_tenants'], fees=request.POST['fees'])
         new_listing.amenities.set(amenities)
         new_listing.save()
         return JsonResponse(new_listing.json_representation(), status=201)
@@ -39,11 +44,18 @@ def create_listing(request):
 @csrf_exempt
 def search_listings(request):
     if request.method == "GET":
-        listings = StudentListing.objects.all().order_by('-listed_date')
-        listing_results = [listing.json_representation() for listing in listings]
+        filtered_listings = []
+        if 'lat' in request.GET and 'long' in request.GET:
+            listings = StudentListing.objects.all().order_by('-listed_date')
+            for listing in listings:
+                lat1 = float(request.GET['lat'])
+                long1 = float(request.GET['long'])
+                if utilities.find_distance(lat1=lat1, long1=long1, lat2=listing.address.lat, long2=listing.address.long) <= constants.DEFAULT_DISTANCE_BETWEEN_COLLEGES:
+                    filtered_listings.append(listing)
+        else:
+            listings = StudentListing.objects.all().order_by('-listed_date')
+            filtered_listings = list(listings)
+        listing_results = [listing.json_representation() for listing in filtered_listings]
         return JsonResponse(listing_results, safe=False, status="200")
     else:
         return HttpResponse(status=400)
-
-
-
