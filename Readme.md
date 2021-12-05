@@ -17,7 +17,7 @@ This is the backend for Team Coder's mobile apps and services project.
 7. Run any migrations ```python manage.py migrate```
 8. **Only do this once**. Setup the database by running ```python manage.py setup_db```
 
-## Configure Messaging
+### Configure Messaging
 Messaging uses websockets to allow for real time communication between users. This real time communication uses
 Redis as a backing store. Install redis for messaging:
 
