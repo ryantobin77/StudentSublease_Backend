@@ -27,6 +27,7 @@ def get_messages(request):
     messages_db = Message.objects.filter(conversation=conversation).order_by('date')
     for message in messages_db:
         message_data = {
+            'pk' : message.pk,
             'sender' : message.sender.pk,
             'message' : message.message,
             'date' : message.date.fromtimestamp(message.date.timestamp(), None).strftime("%m/%d/%Y %I:%M %p"),
@@ -40,7 +41,7 @@ def get_conversations(request):
     if request.method != "GET" or 'user_pk' not in request.GET:
         return HttpResponse(status=400)
     try:
-        user = SubleaseUser.objects.get(pk=request.GET['"user_pk'])
+        user = SubleaseUser.objects.get(pk=request.GET['user_pk'])
     except SubleaseUser.DoesNotExist:
         return HttpResponse(status=400)
 
@@ -48,12 +49,9 @@ def get_conversations(request):
     listings = StudentListing.objects.filter(lister=user)
     for listing in listings:
         conversations_db |= Conversation.objects.filter(listing=listing)
-    conversations_db = conversations_db.annotate(latest_conversation=Max('message__date')).order_by('latest_conversation')
+    conversations_db = conversations_db.annotate(latest_conversation=Max('message__date')).order_by('-latest_conversation')
     result_conversations = list()
     for conversation in conversations_db:
-        is_lister = bool(user == conversation.listing.lister)
-        first_name = conversation.tenant.first_name if is_lister else conversation.listing.lister.first_name
-        last_name = conversation.tenant.last_name if is_lister else conversation.listing.lister.last_name
         last_message = conversation.message_set.last()
         if last_message is not None and last_message.sender != user and last_message.read == False:
             has_new_message = True
@@ -61,23 +59,17 @@ def get_conversations(request):
             has_new_message = False
 
         user_pk = conversation.tenant.pk
-        user_email = conversation.tenant.email
         if user.pk == conversation.tenant.pk:
             user_pk = conversation.listing.lister.pk
-            user_email = conversation.listing.lister.email
 
         conversation_data = {
-            'pk' : str(conversation.pk),
-            'title' : conversation.listing.title,
-            'firstName' : first_name,
-            'lastName' : last_name,
-            'lister' : conversation.listing.lister.pk,
+            'pk' : int(conversation.pk),
             'lastMessage' : last_message.message if last_message is not None else None,
             'date' : last_message.date.fromtimestamp(last_message.date.timestamp(), None).strftime("%m/%d/%Y %I:%M %p") if last_message is not None else None,
             'has_new_message' : has_new_message,
-            'user_pk' : user_pk,
-            'user_email' : user_email,
-            'listing_pk' : conversation.listing.pk,
+            'receiver_pk' : user_pk,
+            'listing' : conversation.listing.json_representation(),
+            'tenant' : conversation.tenant.json_representation()
         }
         result_conversations.append(conversation_data)
     return JsonResponse(result_conversations, safe=False, status="200")
@@ -96,6 +88,6 @@ def start_conversation(request):
         result = {
             'pk' : conversation.pk
         }
-        return JsonResponse(result, safe=False, status="200")
+        return JsonResponse(result, safe=False, status="201")
     else:
         return HttpResponse(status=400)
