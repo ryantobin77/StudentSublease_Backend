@@ -9,6 +9,10 @@ from sublease.models import StudentListing
 from django.views.decorators.csrf import csrf_exempt
 
 
+def test_web_socket(request):
+    return render(request, 'messaging/room.html')
+
+
 @csrf_exempt
 def get_messages(request):
     result_messages = list()

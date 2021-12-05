@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'sublease.apps.SubleaseConfig',
     'users.apps.UsersConfig',
     'utils.apps.UtilsConfig',
-    'messaging.apps.MessagingConfig'
+    'messaging.apps.MessagingConfig',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'StudentSublease_Backend.wsgi.application'
 
+ASGI_APPLICATION = 'StudentSublease_Backend.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
