@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'sublease.apps.SubleaseConfig',
     'users.apps.UsersConfig',
     'utils.apps.UtilsConfig',
+    'messaging.apps.MessagingConfig'
 ]
 
 MIDDLEWARE = [
