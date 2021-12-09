@@ -29,22 +29,45 @@ def create_listing(request):
             return HttpResponse(status=400)
         
         address = Address.objects.create(street=request.POST['street'], city=request.POST['city'], state=request.POST['state'], zip=request.POST['zip'], lat=request.POST['lat'], long=request.POST['long'], country="United States of America")
-        amenities = Amenity.objects.all()
+        amenities = get_amenities(request=request)
         start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d')
         end_date = datetime.strptime(request.POST['end_date'], '%Y-%m-%d')
         new_listing = StudentListing.objects.create(title=request.POST['title'], address=address, lister=lister, description=request.POST['description'], num_bed=request.POST['num_bed'], num_bath=request.POST['num_bath'], 
                             gender_preference=request.POST['gender_preference'], start_date=start_date, end_date=end_date, rent_per_month=request.POST['rent_per_month'], num_tenants=request.POST['num_tenants'], fees=request.POST['fees'])
         new_listing.amenities.set(amenities)
         for image in request.FILES.getlist("file"):
-            StudentListingImages.objects.create(listing=new_listing,image=image)
+            StudentListingImages.objects.create(listing=new_listing, image=image)
         new_listing.save()
-        print("")
-        print("New Listing Created: " , new_listing.json_representation())
         json_response_listing = new_listing.json_representation()
         json_response_listing["distance"] = 0.0
         return JsonResponse(json_response_listing, status=201)
     else:
         return HttpResponse(status=400)
+
+
+def get_amenities(request):
+    amenities = Amenity.objects.none()
+    if 'amenity_1' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_1'])
+    if 'amenity_2' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_2'])
+    if 'amenity_3' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_3'])
+    if 'amenity_4' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_4'])
+    if 'amenity_5' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_5'])
+    if 'amenity_6' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_6'])
+    if 'amenity_7' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_7'])
+    if 'amenity_8' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_8'])
+    if 'amenity_9' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_9'])
+    if 'amenity_10' in request.POST:
+        amenities |= Amenity.objects.filter(amenity_name=request.POST['amenity_10'])
+    return amenities
 
 
 @csrf_exempt
