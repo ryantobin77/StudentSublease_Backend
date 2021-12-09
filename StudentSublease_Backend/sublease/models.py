@@ -59,6 +59,10 @@ class StudentListing(models.Model):
         amenities = list()
         for amenity in amenities_val:
             amenities.append(amenity.amenity_name)
+        images = list()
+        listing_images = self.studentlistingimages_set.all()
+        for image in listing_images:
+            images.append(str(image.image.url))
         return {
             'pk' : int(self.pk),
             'title' : self.title,
@@ -74,7 +78,8 @@ class StudentListing(models.Model):
             'end_date' : self.end_date.strftime('%m/%d/%Y'),
             'rent_per_month' : int(self.rent_per_month),
             'num_tenants' : int(self.num_tenants),
-            'fees' : int(self.fees)
+            'fees' : int(self.fees),
+            'images' : images
         }
 
 
