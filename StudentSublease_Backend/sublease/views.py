@@ -67,14 +67,36 @@ def search_listings(request):
 
 @csrf_exempt
 def delete_listing(request):
-    if request.method == "POST" and 'listing_pk' in request.POST:
+    if request.method == "POST" and 'lister_pk' in request.POST and 'listing_pk' in request.POST:
+        lister_pk = request.POST['lister_pk']
         listing_pk = request.POST['listing_pk']
         try:
+            lister = SubleaseUser.objects.get(pk=lister_pk)
             listing = StudentListing.objects.get(pk=listing_pk)
-        except StudentListing.DoesNotExist:
+        except:
             return HttpResponse(status=400)
-        listing.delete()
-        return HttpResponse(status=200)
+        if lister.pk == listing.lister.pk:
+            listing.delete()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=403)
     else:
         return HttpResponse(status=400)
+
+
+@csrf_exempt
+def my_listings(request):
+    if request.method == "POST" and 'lister_pk' in request.POST:
+        lister_pk = request.POST['lister_pk']
+        try:
+            lister = SubleaseUser.objects.get(pk=lister_pk)
+        except SubleaseUser.DoesNotExist:
+            return HttpResponse(status=400)
+        listings = StudentListing.objects.filter(lister=lister).order_by('-listed_date')
+        results = [listing.json_representation() for listing in listings]
+        return JsonResponse(results, safe=False, status="200")
+    else:
+        return HttpResponse(status=400)
+
+
  
