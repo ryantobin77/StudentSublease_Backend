@@ -63,3 +63,18 @@ def search_listings(request):
         return JsonResponse(filtered_listings, safe=False, status="200")
     else:
         return JsonResponse(filtered_listings, safe=False, status="400")
+
+
+@csrf_exempt
+def delete_listing(request):
+    if request.method == "POST" and 'listing_pk' in request.POST:
+        listing_pk = request.POST['listing_pk']
+        try:
+            listing = StudentListing.objects.get(pk=listing_pk)
+        except StudentListing.DoesNotExist:
+            return HttpResponse(status=400)
+        listing.delete()
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)
+ 

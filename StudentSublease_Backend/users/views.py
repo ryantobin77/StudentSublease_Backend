@@ -41,13 +41,12 @@ def login(request):
 
 		if user is not None:
 			auth_login(request, user)
-			return HttpResponse(status = 201)
+			return JsonResponse(user.json_representation(), status = 200)
 		else:
 			return HttpResponse(status = 400)
 
 @csrf_exempt
 def logout(request):
-
 	auth_logout(request)
-	return HttpResponse(status = 201)
+	return HttpResponse(status = 200)
 

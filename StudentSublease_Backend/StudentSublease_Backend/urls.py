@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from sublease.views import home
+from django.conf.urls.static import static
+from . import settings
 
 urlpatterns = [
     path('', home),
@@ -24,3 +26,6 @@ urlpatterns = [
     path('api/messaging/', include('messaging.urls')),
     path('api/users/', include('users.urls'))
 ]
+
+if settings.DEBUG:
+	urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
